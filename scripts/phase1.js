@@ -41,7 +41,8 @@ async function loadUnsentEmails(sheetLink) {
     // Skip header row, process data rows
     for (let i = 1; i < rows.length; i++) {
       const row = rows[i];
-      if (row && row.length >= 1) { // Changed from >= 2 to >= 1
+      if (row && row.length >= 1) {
+        // Changed from >= 2 to >= 1
         data.push({
           email: row[0], // Column A
           sent_status: row[1] || "", // Column B, default to empty if not present
