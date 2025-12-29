@@ -32,8 +32,6 @@ jobs:
         run: |
           echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" > .env
           echo "EMAIL_PASS=${{ secrets.EMAIL_PASS }}" >> .env
-          echo "XLSX_OPEN_PASSWORD=${{ secrets.XLSX_OPEN_PASSWORD }}" >> .env
-          echo "XLSX_EDIT_PASSWORD=${{ secrets.XLSX_EDIT_PASSWORD }}" >> .env
 
       - name: Run email campaign
         run: node src/index.js
