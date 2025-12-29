@@ -11,8 +11,8 @@ require("dotenv").config();
  * @returns {Array} Array of sent email addresses
  */
 async function sendEmails(batch, subject, body, resumePath) {
-  // Configure transporter
-  const transporter = nodemailer.createTransporter({
+  // Configure transporter - Using Gmail SMTP
+  const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
       user: process.env.EMAIL_USER,

@@ -21,9 +21,13 @@ This project is designed to send batch emails to a list of HR contacts from an X
 
 ### SMTP Configuration
 
-For Gmail, use an app password instead of your regular password to avoid security flags. Enable 2FA and generate an app password.
+This project uses Gmail SMTP. To avoid security issues:
 
-For better deliverability and to avoid spam flags, consider using a service like SendGrid, Mailgun, or AWS SES. Update the transporter configuration in `scripts/phase3.js` accordingly.
+1. Enable 2-Factor Authentication on your Gmail account
+2. Generate an App Password: Go to Google Account settings > Security > App passwords
+3. Use your Gmail address as EMAIL_USER and the app password as EMAIL_PASS
+
+**Note**: Gmail may still flag bulk emails. If you encounter issues, consider using SendGrid or another transactional email service.
 
 ## Usage
 
