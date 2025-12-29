@@ -54,7 +54,7 @@ async function main() {
     const sentEmails = await sendEmails(batch, subject, body, resumePath);
 
     // Phase 4: Update sent status immediately
-    updateSentStatus(filePath, sentEmails, editPassword);
+    await updateSentStatus(filePath, sentEmails, editPassword, openPassword);
 
     console.log("Batch processed successfully");
   } catch (error) {

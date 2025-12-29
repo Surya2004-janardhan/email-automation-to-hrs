@@ -29,11 +29,11 @@ This project uses Gmail SMTP. To avoid security issues:
 
 ### XLSX Passwords
 
-If your `data.xlsx` file is password-protected:
+If your `data.xlsx` file is password-protected (optional - you can remove passwords for simplicity):
 - XLSX_OPEN_PASSWORD: Password to open/read the file
 - XLSX_EDIT_PASSWORD: Password to edit/write to the file
 
-**Note**: Gmail may still flag bulk emails. If you encounter issues, consider using SendGrid or another transactional email service.
+**Note**: The app now uses ExcelJS library which has excellent support for password-protected files. You can remove passwords from your Excel file if preferred for easier use.
 
 ## Usage
 
