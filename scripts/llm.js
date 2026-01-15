@@ -50,14 +50,22 @@ Rules:
     // Parse the JSON response
     const parsed = JSON.parse(responseText);
 
-    if (!parsed.subjects || !parsed.bodies || parsed.subjects.length !== 5 || parsed.bodies.length !== 5) {
+    if (
+      !parsed.subjects ||
+      !parsed.bodies ||
+      parsed.subjects.length !== 5 ||
+      parsed.bodies.length !== 5
+    ) {
       throw new Error("Invalid response format from LLM");
     }
 
     console.log("✅ Successfully generated 5 email variants from LLM");
     return parsed;
   } catch (error) {
-    console.error("❌ Failed to generate email variants from LLM:", error.message);
+    console.error(
+      "❌ Failed to generate email variants from LLM:",
+      error.message
+    );
     console.log("⚠️ Using fallback: creating variants from base template");
 
     // Fallback: create simple variants if LLM fails
@@ -84,10 +92,16 @@ function createFallbackVariants(baseSubject, baseBody) {
   // Simple body variations
   const bodies = [
     baseBody,
-    baseBody.replace("I enjoy solving problems", "Problem-solving is my passion"),
+    baseBody.replace(
+      "I enjoy solving problems",
+      "Problem-solving is my passion"
+    ),
     baseBody.replace("Looking forward to contributing", "Eager to contribute"),
     baseBody.replace("real-world projects", "impactful projects"),
-    baseBody.replace("growing as an engineer", "developing my engineering skills"),
+    baseBody.replace(
+      "growing as an engineer",
+      "developing my engineering skills"
+    ),
   ];
 
   return { subjects, bodies };

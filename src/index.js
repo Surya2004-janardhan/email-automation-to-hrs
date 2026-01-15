@@ -1,4 +1,4 @@
-const { loadUnsentEmails } = require("../scripts/phase1");
+﻿const { loadUnsentEmails } = require("../scripts/phase1");
 const { prepareBatches } = require("../scripts/phase2");
 const { sendEmails } = require("../scripts/phase3");
 const { updateSentStatus } = require("../scripts/phase4");
@@ -10,11 +10,14 @@ async function main() {
 
   const sheetLink =
     "https://docs.google.com/spreadsheets/d/1bPYyC4wrnSfz8swLO2NGgMigfNo1cSwhhTgPud-5QLE/edit?gid=0#gid=0";
-  // Subject and body - update as needed
-  const subject = "Seeking Opportunity in SDE / Full Stack / AI intern";
-  const body = `Hi,
+  
+  // Base subject and body - will be varied by LLM
+  const baseSubject = "Seeking Opportunity in SDE / Full Stack / AI Intern";
+  const baseBody = `Hi,
 
-I enjoy solving problems and am looking for opportunities to work on real-world projects while growing as an engineer. I’ve attached my resume for any SDE / Full Stack / AI roles you might have.
+I enjoy solving problems and am looking for opportunities to work on real-world projects while growing as an engineer. You can find my resume here for any SDE / Full Stack / AI roles you might have:
+
+Resume: ${resumeLink}
 
 Looking forward to contributing to your team.
 
@@ -26,8 +29,8 @@ Surya Janardhan`;
     const allUnsentEmails = await loadUnsentEmails(sheetLink);
     console.log(`Found ${allUnsentEmails.length} unsent emails`);
 
-    // Take only first 100 unsent emails for this run
-    const unsentEmails = allUnsentEmails.slice(0, 100);
+    // Take only first 50 unsent emails for this run
+    const unsentEmails = allUnsentEmails.slice(0, 50);
     console.log(`Processing ${unsentEmails.length} emails this run`);
 
     if (unsentEmails.length === 0) {
@@ -35,21 +38,40 @@ Surya Janardhan`;
       return;
     }
 
-    // Phase 2: Prepare single batch of 100
-    const batches = prepareBatches(unsentEmails);
-    console.log(`Prepared ${batches.length} batch(es)`);
+    // Generate 5 email variants using Groq LLM
+    console.log("\n Generating email variants using Groq LLM...");
+    const { subjects, bodies } = await generateEmailVariants(baseSubject, baseBody);
+    
+    // Phase 2: Prepare 5 batches of 10 emails each
+    const batches = prepareBatches(unsentEmails, 10);
+    console.log(`Prepared ${batches.length} batch(es) of 10 emails each`);
 
-    // Process only the first batch (should be only one batch of 100)
-    const batch = batches[0];
-    console.log(`Processing batch of ${batch.length} emails`);
+    let allSentEmails = [];
 
-    // Phase 3: Send emails
-    const sentEmails = await sendEmails(batch, subject, body, resumePath);
+    // Process each batch with different subject/body variant
+    for (let i = 0; i < batches.length && i < 5; i++) {
+      const batch = batches[i];
+      const subject = subjects[i] || baseSubject;
+      const body = bodies[i] || baseBody;
+      
+      console.log(`\n Processing batch ${i + 1}/${Math.min(batches.length, 5)} (${batch.length} emails)`);
+      console.log(`   Subject: "${subject.substring(0, 50)}..."`);
 
-    // Phase 4: Update sent status immediately
-    await updateSentStatus(sheetLink, sentEmails);
+      // Phase 3: Send emails for this batch
+      const sentEmails = await sendEmails(batch, subject, body, resumeLink);
+      allSentEmails.push(...sentEmails);
 
-    console.log("Batch processed successfully");
+      // Small delay between batches to avoid rate limiting
+      if (i < batches.length - 1 && i < 4) {
+        console.log("   Waiting 2 seconds before next batch...");
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+
+    // Phase 4: Update sent status for all sent emails
+    await updateSentStatus(sheetLink, allSentEmails);
+
+    console.log(`\n All batches processed successfully! Total sent: ${allSentEmails.length}`);
   } catch (error) {
     console.error("Error:", error);
   }
