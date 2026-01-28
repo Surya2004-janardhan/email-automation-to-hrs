@@ -30,6 +30,9 @@ jobs:
           ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           EOF
 
+      - name: List files in workspace
+        run: ls -l
+
       - name: Create .env file
         run: |
           echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" > .env
