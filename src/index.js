@@ -9,8 +9,8 @@ async function main() {
   const resumeLink =
     "https://drive.google.com/file/d/14pEaC7-svetAUzXRZYsnM09cW3VzH2r2/view?usp=sharing ";
   const sheetLink =
-    "https://docs.google.com/spreadsheets/d/1bPYyC4wrnSfz8swLO2NGgMigfNo1cSwhhTgPud-5QLE/edit?gid=0#gid=0";
-  
+    "https://docs.google.com/spreadsheets/d/1bKIeZoQMOmIw9Te_zMSafZOYqUsF3s2MBAqgl7Vjnds/edit?gid=0#gid=0";
+
   // Base subject and body - will be varied by LLM
   const baseSubject = "Seeking Opportunity in SDE / Full Stack / AI Intern";
   const baseBody = `Hi,
@@ -40,8 +40,11 @@ Surya Janardhan`;
 
     // Generate 5 email variants using Groq LLM
     console.log("\n Generating email variants using Groq LLM...");
-    const { subjects, bodies } = await generateEmailVariants(baseSubject, baseBody);
-    
+    const { subjects, bodies } = await generateEmailVariants(
+      baseSubject,
+      baseBody,
+    );
+
     // Phase 2: Prepare 5 batches of 10 emails each
     const batches = prepareBatches(unsentEmails, 10);
     console.log(`Prepared ${batches.length} batch(es) of 10 emails each`);
@@ -53,8 +56,10 @@ Surya Janardhan`;
       const batch = batches[i];
       const subject = subjects[i] || baseSubject;
       const body = bodies[i] || baseBody;
-      
-      console.log(`\n Processing batch ${i + 1}/${Math.min(batches.length, 5)} (${batch.length} emails)`);
+
+      console.log(
+        `\n Processing batch ${i + 1}/${Math.min(batches.length, 5)} (${batch.length} emails)`,
+      );
       console.log(`   Subject: "${subject.substring(0, 30)}..."`);
 
       // Phase 3: Send emails for this batch
@@ -64,14 +69,16 @@ Surya Janardhan`;
       // Small delay between batches to avoid rate limiting
       if (i < batches.length - 1 && i < 4) {
         console.log("   Waiting 2 seconds before next batch...");
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
 
     // Phase 4: Update sent status for all sent emails
     await updateSentStatus(sheetLink, allSentEmails);
 
-    console.log(`\n All batches processed successfully! Total sent: ${allSentEmails.length}`);
+    console.log(
+      `\n All batches processed successfully! Total sent: ${allSentEmails.length}`,
+    );
   } catch (error) {
     console.error("Error:", error);
   }
