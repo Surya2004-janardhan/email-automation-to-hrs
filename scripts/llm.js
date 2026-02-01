@@ -26,7 +26,7 @@ Rules:
 1. Keep subjects concise (under 80 characters)
 2. Keep bodies professional and similar length to original
 3. Maintain the same key points: SDE/Full Stack/AI roles, resume link mention, eagerness to contribute
-4. Each variant should be unique but preserve the original message intent
+4. Each variant should be unique but preserve the original message intent and little wit unique simple words
 5. Do NOT use any special characters that could break JSON parsing
 6. Return ONLY the JSON object, nothing else`;
 
@@ -64,7 +64,7 @@ Rules:
   } catch (error) {
     console.error(
       "❌ Failed to generate email variants from LLM:",
-      error.message
+      error.message,
     );
     console.log("⚠️ Using fallback: creating variants from base template");
 
@@ -86,7 +86,7 @@ function createFallbackVariants(baseSubject, baseBody) {
   ];
 
   const subjects = subjectPrefixes.map(
-    (prefix) => `${prefix} - SDE / Full Stack / AI Intern`
+    (prefix) => `${prefix} - SDE / Full Stack / AI Intern`,
   );
 
   // Simple body variations
@@ -94,13 +94,13 @@ function createFallbackVariants(baseSubject, baseBody) {
     baseBody,
     baseBody.replace(
       "I enjoy solving problems",
-      "Problem-solving is my passion"
+      "Problem-solving is my passion",
     ),
     baseBody.replace("Looking forward to contributing", "Eager to contribute"),
     baseBody.replace("real-world projects", "impactful projects"),
     baseBody.replace(
       "growing as an engineer",
-      "developing my engineering skills"
+      "developing my engineering skills",
     ),
   ];
 
