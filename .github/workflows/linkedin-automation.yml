@@ -1,0 +1,69 @@
+name: LinkedIn Connection Automation
+
+on:
+  schedule:
+    # Runs once daily at 10:00 AM UTC (3:30 PM IST)
+    - cron: "0 10 * * *"
+
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  linkedin-connect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Setup Node.js (for email notifications)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install Python dependencies
+        run: |
+          cd inb
+          pip install -r requirements.txt
+
+      - name: Install Node dependencies
+        run: npm install nodemailer
+
+      - name: Run LinkedIn Connection Automation
+        id: linkedin
+        run: |
+          cd inb
+          python linkedin_connect.py \
+            --email "ddrive600@gmail.com" \
+            --password "${{ secrets.LINKEDIN_PASSWORD }}" \
+            --keyword "Software Engineer Recruiter" \
+            --limit 20 \
+            --message "Hi! I'm a motivated engineer seeking SDE/Full Stack/AI roles. I'd love to connect and explore opportunities. My resume: https://drive.google.com/file/d/14pEaC7-svetAUzXRZYsnM09cW3VzH2r2/view Thank you!" \
+            --nofollow \
+            --refresh-cookies 2>&1 | tee linkedin_output.txt
+        env:
+          LINKEDIN_PASSWORD: ${{ secrets.LINKEDIN_PASSWORD }}
+        continue-on-error: true
+
+      - name: Send SUCCESS notification email
+        if: steps.linkedin.outcome == 'success'
+        run: node scripts/send-linkedin-notification.js success
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
+      - name: Send FAILURE notification email
+        if: steps.linkedin.outcome == 'failure'
+        run: node scripts/send-linkedin-notification.js failure
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+
+      - name: Fail the workflow if LinkedIn step failed
+        if: steps.linkedin.outcome == 'failure'
+        run: exit 1
